@@ -1,4 +1,4 @@
-# Battleship
+# Single-player Battleship
  A single-player battleship game against a computer generated map.
  
 ## Tech-stack
