@@ -90,11 +90,21 @@ const Game = () => {
     return (
         <div className="game">
             <div className="game-info">
+                <p>Ships (size, amount):</p>
+                <p> 
+                    <a className="info-element">1 tile - 3</a>
+                    <a className="info-element">2 tile - 3</a>
+                    <a className="info-element">3 tile - 2</a>
+                    <a className="info-element">4 tile - 1</a>
+                    <a className="info-element">5 tile - 1</a>
+                </p>
                 <button onClick={handleNewGame}>Start New Game</button>
-                <>
+                
+                {isGameStarted ? (<>
                     <p>Ships remaining: {shipsCount}</p>
                     <p>Shots remaining: {shotsCount}</p>
                 </>
+                ) : null}
             </div>
             {checkGameStatus()}
             {errorMessage && <p className="error">{errorMessage}</p>}
