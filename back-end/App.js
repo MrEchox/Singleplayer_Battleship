@@ -14,6 +14,7 @@ app.use(cors({
 
 const games = {}; // Holds game sessions
 const shots = 25; // Number of shots
+
 class Ship {
     constructor(size) { 
         this.size = size; // Number of tiles
@@ -121,8 +122,8 @@ app.post('/api/v1/game/new', (req, res) => {
     const gameId = uuidv4(); // Generate unique game ID
     board = generateGame();
 
-    games[gameId] = {board, shots: 25, ships: 10}; // Save game session
-    res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false}))), shots: shots, ships: 10}); // Return a new game with cells hidden
+    games[gameId] = {board, shotsCount: shots, shipsCount: 10}; // Save game session
+    res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false}))), shotsCount: shots, shipsCount: 10}); // Return a new game with cells hidden
     console.log(`Game ${gameId} generated`);
     console.log("All existing games: ");
     for (let key in games) {
@@ -150,19 +151,30 @@ app.post('/api/v1/game/:gameId/fire', (req, res) => {
     board[x][y].revealed = true;
 
     if (board[x][y].ship) {
-        console.log("Fired shot at (${x}, ${y}) and hit a ship!");
+        console.log("GameID:" + gameId + ". Fired shot at (${x}, ${y}) and hit a ship!");
         board[x][y].ship.hit(); // Hit the ship
 
         if (board[x][y].ship.isSunk()) {
-            console.log("Ship sunk!");
+            console.log("GameID: ${gameId}. Ship sunk!");
             games[gameId].shipsCount--; // Decrement ship count
+            // Reveal surrounding tiles
+            for (const {shipX, shipY} of board[x][y].ship.tiles) {
+                for (let i = -1; i < 2; i++) {
+                    for (let j = -1; j < 2; j++) {
+                        if (shipX + i >= 0 && shipX + i < 10 && shipY + j >= 0 && shipY + j < 10) {
+                            board[shipX + i][shipY + j].revealed = true;
+                            console.log(`GameID: ${gameId}. Revealed tile (${shipX + i}, ${shipY + j})`);
+                        }
+                    }
+                }
+            }
         }
-        return res.json({hit: true, board, shots: games[gameId].shots, ships: games[gameId].ships});
+        return res.json({hit: true, board, shots: games[gameId].shotsCount, ships: games[gameId].shipsCount});
     }
 
-    games[gameId].shots--; // Decrement shots count
-    console.log("Fired shot at (${x}, ${y}) and missed!");
-    return res.json({hit: false, board, shots: games[gameId].shots, ships: games[gameId].ships});
+    games[gameId].shotsCount--; // Decrement shots count
+    console.log("GameID:" + gameId + ". Fired shot at (${x}, ${y}) and missed!");
+    return res.json({hit: false, board, shots: games[gameId].shotsCount, ships: games[gameId].shipsCount});
 });
 
 // Start the server

@@ -35,8 +35,8 @@ const Game = () => {
             console.log('Formatted board:', formattedBoard);
             setBoard(formattedBoard);
             setGameId(data.gameId);
-            setShipsCount(data.ships);
-            setShotsCount(data.shots);
+            setShipsCount(data.shipsCount);
+            setShotsCount(data.shotsCount);
             setIsGameStarted(true);
         } catch (error) {
             console.log('Error fetching board:', error);
