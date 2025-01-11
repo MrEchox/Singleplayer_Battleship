@@ -78,6 +78,15 @@ const Game = () => {
         }
     };
 
+    const checkGameStatus = () => {
+        if (shipsCount === 0) {
+            return <p className="win">You win the game!</p>
+        } else if (shotsCount === 0) {
+            return <p className="lose">You just lost the game! Try again ;)</p>
+        }
+        return null;
+    };
+
     return (
         <div className="game">
             <div className="game-info">
@@ -87,6 +96,7 @@ const Game = () => {
                     <p>Shots remaining: {shotsCount}</p>
                 </>
             </div>
+            {checkGameStatus()}
             {errorMessage && <p className="error">{errorMessage}</p>}
             <div className="game-board">
                 {isGameStarted ? (

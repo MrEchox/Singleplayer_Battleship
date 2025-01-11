@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 const games = {}; // Holds game sessions
-const shots = 50; // Number of shots
+const shots = 25; // Number of shots
 
 class Ship {
     constructor(size) { 
@@ -45,11 +45,11 @@ const generateGame = () => {
 
     // Ship sizes and their counts
     const shipSizes = [
-        {size: 1, count: 3},
-        {size: 2, count: 3},
-        {size: 3, count: 2},
-        {size: 4, count: 1},
         {size: 5, count: 1},
+        {size: 4, count: 1},
+        {size: 3, count: 2},
+        {size: 2, count: 3},
+        {size: 1, count: 3},
     ];
 
     // Check whether the position to place ship is valid
