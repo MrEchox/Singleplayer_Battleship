@@ -110,3 +110,62 @@ const generateGame = () => {
 
     return board;
 }
+
+// API endpoints --------------------------------------------------------------
+
+// Start/generate a new game
+app.post('/api/v1/game/new', (req, res) => { 
+    delete games[req.body.gameId]; // Delete previous game (if empty doesn't delete anything)
+    
+    let board;
+    const gameId = uuidv4(); // Generate unique game ID
+    board = generateGame();
+
+    games[gameId] = {board, shots: 25, ships: 10}; // Save game session
+    res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false})))}); // Return a new game with cells hidden
+    console.log(`Game ${gameId} generated`);
+    console.log("All existing games: ");
+    for (let key in games) {
+        console.log(key);
+    }
+});
+
+// Fire a shot
+app.post('/api/v1/game/:gameId/fire', (req, res) => {
+    const {gameId} = req.params;
+    const {x, y} = req.body;
+
+    // Check if the game exists
+    if (!games[gameId]) {
+        return res.status(404).json({error: 'Game not found!'});
+    }
+
+    const {board} = games[gameId];
+
+    // Check if the tile/cell is already revealed
+    if (board[x][y].revealed) {
+        return res.status(400).json({error: 'Cell already revealed!'});
+    }
+
+    board[x][y].revealed = true;
+
+    if (board[x][y].ship) {
+        console.log("Fired shot at (${x}, ${y}) and hit a ship!");
+        board[x][y].ship.hit(); // Hit the ship
+
+        if (board[x][y].ship.isSunk()) {
+            console.log("Ship sunk!");
+            games[gameId].shipsCount--; // Decrement ship count
+        }
+        return res.json({hit: true, board, shots: games[gameId].shots, ships: games[gameId].ships});
+    }
+
+    games[gameId].shots--; // Decrement shots count
+    console.log("Fired shot at (${x}, ${y}) and missed!");
+    return res.json({hit: false, board, shots: games[gameId].shots, ships: games[gameId].ships});
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
