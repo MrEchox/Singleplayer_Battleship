@@ -8,6 +8,7 @@ const Game = () => {
     const [shotsCount, setShotsCount] = useState(null);
     const [gameId, setGameId] = useState(null);
     const [isGameStarted, setIsGameStarted] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const domain = 'http://localhost:3001';
 
@@ -40,6 +41,9 @@ const Game = () => {
             setIsGameStarted(true);
         } catch (error) {
             console.log('Error fetching board:', error);
+            if (error.message.includes('500')) {
+                setErrorMessage('Failed to generate game! Please try again');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -83,6 +87,7 @@ const Game = () => {
                     <p>Shots remaining: {shotsCount}</p>
                 </>
             </div>
+            {errorMessage && <p className="error">{errorMessage}</p>}
             <div className="game-board">
                 {isGameStarted ? (
                     isLoading ? (

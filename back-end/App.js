@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 const games = {}; // Holds game sessions
-const shots = 25; // Number of shots
+const shots = 50; // Number of shots
 
 class Ship {
     constructor(size) { 
@@ -84,28 +84,36 @@ const generateGame = () => {
         return true;
     };
 
+    // Places a ship on the board
     const placeShip = (size) => {
-        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical'; // Random orientation
-        const x = Math.floor(Math.random() * 10);
-        const y = Math.floor(Math.random() * 10);
+        let tries = 0;
+        while (tries < 1000) { // Try 1000 times to place a ship
+            const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical'; // Random orientation
+            const x = Math.floor(Math.random() * 10);
+            const y = Math.floor(Math.random() * 10);
 
-        if (isPosValid(x, y, size, orientation)) {
-            let tiles = [];
-            const ship = new Ship(size);
-            for (let i = 0; i < size; i++) { // Place ship on board
-                const row = orientation === 'horizontal' ? x : x + i;
-                const col = orientation === 'vertical' ? y : y + i;
-                board[row][col].ship = ship; // Assign ship to tile
-                tiles.push({shipX: row, shipY: col});
+            if (isPosValid(x, y, size, orientation)) {
+                let tiles = [];
+                const ship = new Ship(size);
+                for (let i = 0; i < size; i++) { // Place ship on board
+                    const row = orientation === 'horizontal' ? x : x + i;
+                    const col = orientation === 'vertical' ? y : y + i;
+                    board[row][col].ship = ship; // Assign ship to tile
+                    tiles.push({shipX: row, shipY: col});
+                }
+                ship.tiles = tiles; // Save ship coordinates
+                return true;
             }
-            ship.tiles = tiles; // Save ship coordinates
+            tries++;
         }
+        return false; // Failed to place ship
     };
 
-    // Place ships on the board
     shipSizes.forEach(({size, count}) => {
         for (let i = 0; i < count; i++) {
-            placeShip(size);
+            if (!placeShip(size)) {
+                return null; // Failed to place ship
+            }
         }
     });
 
@@ -120,7 +128,18 @@ app.post('/api/v1/game/new', (req, res) => {
     
     let board;
     const gameId = uuidv4(); // Generate unique game ID
-    board = generateGame();
+
+    let tries = 0;
+    while (tries < 10) { // Try 10 times to generate a game
+        board = generateGame(); // Generate a new game
+        if (board != null) {
+            break;
+        }
+        tries++;
+    }
+    if (board == null) {
+        return res.status(500).json({error: 'Failed to generate game board!'});
+    }
 
     games[gameId] = {board, shotsCount: shots, shipsCount: 10}; // Save game session
     res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false}))), shotsCount: shots, shipsCount: 10}); // Return a new game with cells hidden
