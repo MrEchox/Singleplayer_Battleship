@@ -1,6 +1,6 @@
 import React from "react";
 
-function Header() {
+const Header = () => {
     return (
         <header className="header">
             <h1>Battleship Game</h1>
