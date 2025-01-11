@@ -7,8 +7,9 @@
   --color-button: #9EC8B9;
 
   /* Game colors */
-  --color-ship-missed: #283d3b;
   --color-ship-hidden: #197278;
+  --color-ship-hidden-alt: #2dc0cb;
+  --color-ship-missed: #283d3b;
   --color-ship-hit: #c44536;
 
 }
@@ -46,3 +47,37 @@ header {
   justify-content: center;
 }
 
+.game-board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-board table {
+  border-collapse: collapse;
+  margin: 20px;
+  background-color: var(--color-ship-hidden);
+}
+
+.game-board td {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid black;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+}
+
+.hit {
+  background-color: var(--color-ship-hit);
+}
+
+.miss {
+  background-color: var(--color-ship-missed);
+}
+
+.game-board td:not(.hit):not(.miss):hover {
+  background-color: var(--color-ship-hidden-alt);
+  cursor: pointer;
+}
