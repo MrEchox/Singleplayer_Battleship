@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 const games = {}; // Holds game sessions
-
+const shots = 25; // Number of shots
 class Ship {
     constructor(size) { 
         this.size = size; // Number of tiles
@@ -122,7 +122,7 @@ app.post('/api/v1/game/new', (req, res) => {
     board = generateGame();
 
     games[gameId] = {board, shots: 25, ships: 10}; // Save game session
-    res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false})))}); // Return a new game with cells hidden
+    res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false}))), shots: shots, ships: 10}); // Return a new game with cells hidden
     console.log(`Game ${gameId} generated`);
     console.log("All existing games: ");
     for (let key in games) {
