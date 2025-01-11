@@ -45,6 +45,35 @@ const Game = () => {
         }
     };
 
+    const handleTileClick = async (x, y) => {
+        // Check if the game is loading, no ships left, no shots left or the cell is already revealed
+        if (isLoading || shipsCount === 0 || shotsCount === 0 || board[x][y] !== '') {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${domain}/api/v1/game/${gameId}/fire`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({x, y}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fire shot! Status:', response.status);
+            }
+
+            const data = await response.json();
+            const formattedBoard = data.board.map(row => row.map(cell => cell.revealed ? cell.ship ? 'X' : 'O' : ''));
+            setBoard(formattedBoard);
+            setShipsCount(data.ships);
+            setShotsCount(data.shots);
+        } catch (error) {
+            console.log('Error firing shot:', error);
+        }
+    };
+
     return (
         <div className="game">
             <div className="game-info">
@@ -66,6 +95,7 @@ const Game = () => {
                                 {row.map((cell, cellIndex) => (
                                     <td
                                         key={cellIndex}
+                                        onClick={() => handleTileClick(rowIndex, cellIndex)}
                                         className={cell === 'X' ? 'hit' : cell === 'O' ? 'miss' : ''}>
                                         {cell}
                                     </td>
