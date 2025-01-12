@@ -64,6 +64,12 @@ const Game = () => {
                 body: JSON.stringify({x, y}),
             });
 
+            if (response.status === 404) {
+                setErrorMessage('Your game session has expired! Please start a new game.');
+                setIsGameStarted(false); // Reset game state
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error('Failed to fire shot! Status:', response.status);
             }

@@ -14,6 +14,8 @@ app.use(cors({
 
 const games = {}; // Holds game sessions
 const shots = 25; // Number of shots
+const session_ttl = 300000; // Session time-to-live (5 minutes)
+const gameTimers = {}; // Game timers
 
 class Ship {
     constructor(size) { 
@@ -32,6 +34,17 @@ class Ship {
         return this.hits === this.size;
     }
 }
+
+const startGameTimer = (gameId) => {
+    gameTimers[gameId] = setTimeout(() => {
+        if (gameTimers[gameId]) clearTimeout(gameTimers[gameId]);
+        gameTimers[gameId] = setTimeout(() => {
+            delete games[gameId];
+            delete gameTimers[gameId];
+            console.log(`Game ${gameId} expired`);
+        }, session_ttl);
+    });
+};
 
 const generateGame = () => {
     // Generate a 10x10 board w/o ships
@@ -143,7 +156,8 @@ app.post('/api/v1/game/new', (req, res) => {
 
     games[gameId] = {board, shotsCount: shots, shipsCount: 10}; // Save game session
     res.json({gameId, board: board.map(row => row.map(cell => ({revealed: false}))), shotsCount: shots, shipsCount: 10}); // Return a new game with cells hidden
-    console.log(`Game ${gameId} generated`);
+    startGameTimer(gameId); // Start game timer
+    console.log(`Game ${gameId} generated. Session timer started (5 minutes)`);
     console.log("All existing games: ");
     for (let key in games) {
         console.log(key);
@@ -160,6 +174,8 @@ app.post('/api/v1/game/:gameId/fire', (req, res) => {
         return res.status(404).json({error: 'Game not found!'});
     }
 
+    startGameTimer(gameId); // Reset game timer
+    console.log("GameID:" + gameId + ". Timer refreshed (5 minutes)");
     const {board} = games[gameId];
 
     // Check if the tile/cell is already revealed
