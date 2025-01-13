@@ -5,9 +5,9 @@ const { app, games, generateGame, Ship } = require('../App');
 describe('generateGame', () => {
     test('should generate a 10x10 board', () => {
         const board = generateGame();
-        expect(board).toBe(10);
+        expect(board.length).toBe(10);
         board.forEach(row => {
-            expect(row).toBe(10);
+            expect(row.length).toBe(10);
         });
     });
 
