@@ -15,7 +15,7 @@ To run the back-end of the project, simply navigate to the `/back-end` directory
 
 - Front-end:
 
-To run the front-end of the project, simply navigate to the `/front-end` via command line directory and run `npm start`. This will run the development build.
+To run the front-end of the project, simply navigate to the `/front-end` directory via command line  and run `npm start`. This will run the development build.
 
 ## How the game works
 Upon first opening the game, you must press the "Start New Game" button in order to start the game (or to start another one).
