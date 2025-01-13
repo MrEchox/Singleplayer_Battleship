@@ -24,3 +24,22 @@ describe('generateGame', () => {
         expect(shipCount).toBe(24); // Total cell count should be = 1*3 + 2*3 + 3*2 + 4*1 + 5*1 = 24
     });
 });
+
+describe ('Ship class', () => {
+    test('hit should increment hits', () => {
+        const ship = new Ship(3);
+        ship.hit();
+        expect(ship.hits).toBe(1);
+    });
+
+    test('isSunk should return true when hits equal size', () => {
+        const ship = new Ship(3);
+        expect(ship.isSunk()).toBe(false);
+        ship.hit();
+        expect(ship.isSunk()).toBe(false);
+        ship.hit();
+        expect(ship.isSunk()).toBe(false);
+        ship.hit();
+        expect(ship.isSunk()).toBe(true);
+    });
+});
