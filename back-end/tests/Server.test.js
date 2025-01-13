@@ -43,3 +43,39 @@ describe ('Ship class', () => {
         expect(ship.isSunk()).toBe(true);
     });
 });
+
+// API endpoint tests
+// ---- INTEGRATION TESTS FOR EXPRESS ROUTES ----
+describe('Battleship API', () => {
+    let gameId;
+
+    // Clean up the games object after each test run
+    afterEach(() => {
+        if (gameId && games[gameId]) {
+            delete games[gameId];
+        }
+        gameId = null;
+    });
+
+    describe('POST /api/v1/game/new', () => {
+        it('should start a new game and return a gameId, a hidden board, shot and ship counts', async () => {
+            const res = await request(app)
+            .post('/api/v1/game/new')
+            .send();
+            
+            expect(res.status).toBe(200);
+            expect(res.body.gameId).toBeDefined();
+            expect(res.body.board).toBeDefined();
+            expect(Array.isArray(res.body.board)).toBe(true);
+            expect(res.body.shotsCount).toBe(25);
+            expect(res.body.shipsCount).toBe(10);
+
+            // Board should initially not reveal ship positions
+            res.body.board.forEach(row => {
+                row.forEach(cell => {
+                    expect(cell).toHaveProperty('revealed', false);
+                });
+            });
+        });
+    });
+});
