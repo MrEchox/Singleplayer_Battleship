@@ -78,4 +78,6 @@ describe('Battleship API', () => {
             });
         });
     });
+
+    // Due to ship placement being random, we can't predict the ship hit tests
 });
