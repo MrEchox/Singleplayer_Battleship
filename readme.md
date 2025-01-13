@@ -11,7 +11,7 @@ Communication between front-end and back-end is done via REST API.
 ## How to run
 - Back-end:
 
-To run the back-end of the project, simply navigate to the `/back-end` directory via command line and run `node app.js`.
+To run the back-end of the project, simply navigate to the `/back-end` directory via command line and run `node Server.js`.
 
 - Front-end:
 

@@ -212,7 +212,4 @@ app.post('/api/v1/game/:gameId/fire', (req, res) => {
     return res.json({hit: false, board, shots: games[gameId].shotsCount, ships: games[gameId].shipsCount});
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+module.exports = {app, games, generateGame, Ship};
